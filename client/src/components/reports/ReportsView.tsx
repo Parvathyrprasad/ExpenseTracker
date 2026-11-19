@@ -22,7 +22,6 @@ import {
   TrendingUp,
   ArrowUpRight,
   ArrowDownLeft,
-  Calendar,
   Loader2,
   AlertCircle,
   PiggyBank,
