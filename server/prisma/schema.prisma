@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  UPI
+  BANK_TRANSFER
+  OTHER
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String        @map("password_hash")
+  firstName    String        @map("first_name")
+  lastName     String        @map("last_name")
+  currency     String        @default("INR")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  categories   Category[]
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@map("users")
+}
+
+model Category {
+  id        String       @id @default(uuid())
+  userId    String?      @map("user_id")
+  user      User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  type      CategoryType
+  icon      String       @default("Tag")
+  color     String       @default("#6B7280")
+  isDefault Boolean      @default(false) @map("is_default")
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@index([userId])
+  @@map("categories")
+}
+
+model Transaction {
+  id              String          @id @default(uuid())
+  userId          String          @map("user_id")
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId      String          @map("category_id")
+  category        Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  title           String
+  amount          Decimal         @db.Decimal(12, 2)
+  type            TransactionType
+  transactionDate DateTime        @map("transaction_date")
+  note            String?
+  paymentMethod   PaymentMethod   @default(UPI) @map("payment_method")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  @@index([userId, transactionDate])
+  @@index([userId, categoryId])
+  @@map("transactions")
+}
+
+model Budget {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId     String   @map("category_id")
+  category       Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  month          Int
+  year           Int
+  amount         Decimal  @db.Decimal(12, 2)
+  alertThreshold Float    @default(0.8) @map("alert_threshold")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, categoryId, month, year])
+  @@index([userId, month, year])
+  @@map("budgets")
+}
