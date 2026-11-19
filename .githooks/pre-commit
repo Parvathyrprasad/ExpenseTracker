@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo "Running ExpenseTracker tests before commit..."
+
+npm test
+
+if [ $? -ne 0 ]; then
+    echo "Pre-commit check failed. Commit cancelled."
+    exit 1
+fi
+
+echo "All tests passed. Commit allowed."
+exit 0
