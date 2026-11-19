@@ -1,55 +1,354 @@
 # Expense Tracker Application
 
-A modern, responsive, and secure personal finance & expense tracking application built with a decoupled React frontend, Express/Node.js backend, and PostgreSQL with Prisma ORM.
+A modern, responsive personal finance and expense tracking application built using React, TypeScript, Node.js, Express, PostgreSQL and Prisma ORM.
 
----
+The application helps users manage income and expenses, organise transactions by category, monitor budgets and view financial analytics through a dashboard.
 
-## Tech Stack Overview
+## 1. Project Overview
 
-- **Frontend:** React 18 (TypeScript), Vite, Tailwind CSS, Lucide Icons, TanStack Query, Zustand, Recharts, Vitest
-- **Backend:** Node.js, Express.js, TypeScript, Prisma ORM, Zod, Bcrypt, JWT, Helmet, CORS, Vitest + Supertest
-- **Database:** PostgreSQL (Docker Container `internship-postgres` on port 5432, dedicated database: `expensetracker_db`)
-- **Currency Standard:** Indian Rupee (INR - ₹) with Decimal(12,2) precision for financial calculations.
+**Project Name:** Expense Tracker
 
----
+**Application Type:** Full-stack web application
 
-## Database Architecture
+**Currency:** Indian Rupee (INR – ₹)
 
-- **`users`**: Manages credentials (bcrypt hashed with 12 salt rounds), profile details, default currency (`INR`), and timestamps.
-- **`categories`**: System-level default categories (18 seeded: 11 Expense, 7 Income) and user-defined custom categories with custom icons and colors.
-- **`transactions`**: Income and Expense records linked strictly to the user and category, storing `title`, `Decimal(12,2)` amounts, payment methods (`UPI`, `CASH`, `CARD`, `BANK_TRANSFER`, `OTHER`), and notes.
-- **`budgets`**: User-scoped monthly budgets per category with alert threshold indicators (e.g. 80%) and compound uniqueness per user, category, month, and year.
+### Key Features
 
----
+- User registration and login.
+- Secure password hashing using bcrypt.
+- JWT-based authentication.
+- Protected application routes.
+- Dashboard with financial summaries.
+- Income and expense transaction management.
+- Add, edit and delete transactions.
+- Category management.
+- Budget management.
+- Financial reports and visual analytics.
+- Payment method selection.
+- PostgreSQL database integration.
+- Input validation and error handling.
+- Responsive user interface.
 
-## Implemented Milestones
+## 2. Technologies Used
 
-- [x] **Milestone 1:** Project Foundation, Docker PostgreSQL Setup, Prisma Migrations, and Category Seeder.
-- [x] **Milestone 2:** User Authentication, Bcrypt Password Hashing, JWT Middleware, Protected Routes, Profile Management.
-- [x] **Milestone 3:** Categories & Transaction Core CRUD with strict Decimal(12,2) precision, user data isolation, and responsive UI.
-- [ ] **Milestone 4:** Dashboard Metrics, Budgeting & Over-Budget Alerts, and Recharts Analytics.
+| Area | Technologies |
+|---|---|
+| Frontend | React 18, TypeScript |
+| Build Tool | Vite 6 |
+| Styling | Tailwind CSS |
+| Backend | Node.js, Express.js, TypeScript |
+| Database | PostgreSQL |
+| ORM | Prisma 6 |
+| Authentication | JWT, bcrypt |
+| Validation | Zod |
+| Data Visualisation | Recharts |
+| Testing | Vitest, Supertest, React Testing Library |
+| Containerisation | Docker |
 
----
+## 3. Project Architecture
 
-## Running Locally
+The application follows a decoupled frontend and backend architecture.
 
-### 1. Database (Docker)
-Ensure Docker Desktop is running. The PostgreSQL container `internship-postgres` is exposed on `localhost:5432` with database `expensetracker_db`.
+- **Frontend:** React application responsible for the user interface.
+- **Backend:** Express REST API responsible for business logic and API operations.
+- **Database:** PostgreSQL stores user, transaction, category and budget information.
+- **ORM:** Prisma manages database queries and schema operations.
 
-### 2. Backend
+### Database Modules
+
+- Users – User credentials, profile information and authentication data.
+- Categories – Default and custom income and expense categories.
+- Transactions – Income and expense records.
+- Budgets – Monthly budgets associated with users and categories.
+
+## 4. Project Folder Structure
+
+```text
+ExpenseTracker/
+│
+├── client/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── features/
+│   │   ├── context/
+│   │   └── ...
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── server/
+│   ├── prisma/
+│   ├── src/
+│   ├── .env.example
+│   └── package.json
+│
+├── .agents/
+│   └── skills/
+│       ├── add-feature-workflow/
+│       │   └── SKILL.md
+│       └── code-review-checklist/
+│           └── SKILL.md
+│
+├── .githooks/
+│   ├── pre-commit
+│   └── pre-commit.cmd
+│
+├── screenshots/
+├── AGENTS.md
+├── AI_PERMISSIONS.md
+├── AI_USAGE_LOG.md
+├── AI_REFLECTION.md
+├── README.md
+└── package.json
+```
+
+## 5. Installation and Setup
+
+### Prerequisites
+
+Install the following:
+
+- Node.js
+- npm
+- PostgreSQL
+- Docker Desktop (if using the PostgreSQL Docker container)
+- Git
+
+### Step 1: Clone the Repository
+
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+cd ExpenseTracker
+```
+
+Replace `YOUR_GITHUB_REPOSITORY_URL` with your actual GitHub repository URL.
+
+### Step 2: Install Dependencies
+
+```bash
+npm install
+```
+
+### Step 3: Configure Environment Variables
+
+Create a backend environment file using the example configuration.
+
+On Windows CMD:
+
+```cmd
+copy server\.env.example server\.env
+```
+
+Open `server/.env` and configure the database connection and authentication settings.
+
+Important environment variables:
+
+| Variable | Description |
+|---|---|
+| PORT | Backend server port |
+| NODE_ENV | Application environment |
+| DATABASE_URL | PostgreSQL connection URL |
+| JWT_SECRET | Secret used for JWT authentication |
+| JWT_EXPIRES_IN | JWT expiration duration |
+| CORS_ORIGIN | Frontend origin |
+| DEFAULT_CURRENCY | Default currency code |
+| DEFAULT_CURRENCY_SYMBOL | Currency symbol |
+
+Use your own secure database credentials and JWT secret. Do not commit the actual `.env` file.
+
+### Step 4: Configure PostgreSQL
+
+Ensure PostgreSQL is running and create the database:
+
+```text
+expensetracker_db
+```
+
+Update `DATABASE_URL` in `server/.env` with your PostgreSQL username, password, host and database name.
+
+### Step 5: Generate Prisma Client and Run Migrations
+
+```bash
+npm --prefix server run prisma:generate
+npm --prefix server run prisma:migrate
+```
+
+### Step 6: Start the Backend
+
 ```bash
 npm run dev:server
 ```
-Runs at `http://localhost:5000` (Health Check: `http://localhost:5000/api/health`).
 
-### 3. Frontend
+Backend URL:
+
+```text
+http://localhost:5000
+```
+
+Health check:
+
+```text
+http://localhost:5000/api/health
+```
+
+### Step 7: Start the Frontend
+
+Open another terminal in the project root:
+
 ```bash
 npm run dev:client
 ```
-Runs at `http://localhost:5173`.
 
-### 4. Tests
-```bash
-npm run test:server   # 30 tests passing (Health, Auth, Categories, Transactions)
-npm run test:client   # 9 tests passing (App, Auth, Categories, Transactions)
+Frontend URL:
+
+```text
+http://localhost:5173
 ```
+
+## 6. Testing
+
+The project uses Vitest, Supertest and React Testing Library.
+
+Run backend tests:
+
+```bash
+npm run test:server
+```
+
+Run frontend tests:
+
+```bash
+npm run test:client
+```
+
+Run all tests:
+
+```bash
+npm test
+```
+
+**Verified test results:**
+
+- Backend: 42 tests passed.
+- Frontend: 9 tests passed.
+- Total: 51 tests passed.
+
+### Production Build
+
+```bash
+npm run build
+```
+
+The backend TypeScript compilation and frontend production build completed successfully.
+
+## 7. Application Screenshots
+
+The following screenshots demonstrate the application's user interface and major features.
+
+### Login
+
+![Login Screen](screenshots/Login.png.png)
+
+### Dashboard
+
+![Dashboard](screenshots/Dashbaord.png.png)
+
+### Categories
+
+![Categories](screenshots/Categories.png.png)
+
+### Add Categories
+
+![Add Categories](screenshots/Addcategories.png.png)
+
+### Transactions
+
+![Transactions](screenshots/Transaction.png.png)
+
+### Record Transaction
+
+![Record Transaction](screenshots/Recordtransaction.png.png)
+
+### Transaction Details
+
+![Transaction Details](screenshots/transactionful.png.png)
+
+### Visual Analytics
+
+![Visual Analytics](screenshots/Visualanalytics.png.png)
+
+## 8. AI-Assisted Development Workflow
+
+AI-assisted development practices and supporting documents are included in this repository.
+
+### Project Rules
+
+`AGENTS.md`
+
+Contains project architecture, technology stack, coding standards, development commands, important restrictions and definition of done.
+
+### Skill 1: Add Feature Workflow
+
+`.agents/skills/add-feature-workflow/SKILL.md`
+
+Defines a structured process for understanding requirements, planning, obtaining approval, implementing changes and testing new features.
+
+### Skill 2: Code Review Checklist
+
+`.agents/skills/code-review-checklist/SKILL.md`
+
+Provides a checklist for reviewing correctness, security, validation, code quality and test coverage.
+
+### Git Pre-commit Hook
+
+`.githooks/pre-commit`
+
+Runs the project test suite before allowing a Git commit.
+
+The hook was tested successfully, and all 51 tests passed during commit verification.
+
+To configure Git to use the repository hooks:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+### AI Permissions
+
+`AI_PERMISSIONS.md`
+
+Documents the approval-based AI permission approach and the actions that require user approval.
+
+### AI Usage Log
+
+`AI_USAGE_LOG.md`
+
+Documents AI prompts, generated outputs, identified limitations and changes made during development.
+
+### AI Reflection
+
+`AI_REFLECTION.md`
+
+Describes the experience of using AI-assisted development, its benefits and areas requiring human verification.
+
+## 9. Git Version Control
+
+The project uses Git for source control and meaningful commits.
+
+Recent commits:
+
+```text
+7c01113 Add AI workflow documentation, skills, and pre-commit hook
+1291a74 Add budget and reports navigation
+```
+
+## 10. Important Implementation Note
+
+This repository contains a full-stack web-based Expense Tracker using PostgreSQL persistence.
+
+It is not a command-line application using local JSON/CSV persistence. If the assessment requires the CLI implementation specifically, confirm with the evaluator whether this web implementation is acceptable.
+
+## 11. Conclusion
+
+The Expense Tracker demonstrates full-stack application development using React, TypeScript, Node.js, Express and PostgreSQL.
+
+It also includes testing, Git version control, AI-assisted development rules, reusable AI skills, a pre-commit testing hook and supporting development documentation.
